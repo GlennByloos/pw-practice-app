@@ -11,7 +11,20 @@ export default defineConfig<TestOptions>({
   },
 
   retries: 1,
-  reporter: 'html',
+  reporter: [
+    process.env.CI ? ["dot"] : ["list"],
+    [
+      "@argos-ci/playwright/reporter",
+      {
+        // Upload to Argos on CI only.
+        uploadToArgos: !!process.env.CI,
+      },
+    ],
+    ['json', {outputFile: 'test-results/jsonReport.json'}],
+    ['junit', {outputFile: 'test-results/junitReport.xml'}],
+    // ['allure-playwright'],
+    ['html']
+  ],
 
   use: {
     globalsQaURL: "https://www.globalsqa.com/demo-site/draganddrop/",
